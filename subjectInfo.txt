@@ -1,3 +1,4 @@
 Math 6
 French 3
 CS 3
+English 1

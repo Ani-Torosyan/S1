@@ -1,4 +1,4 @@
-#include "scholarships.c"
+#include "header.h" // Include the custom header file that defines structures and function prototypes
 
 // Function to swap two float values
 /**
@@ -41,21 +41,21 @@ void swapInt(int *xp, int *yp)
  *
  * @param arr Array of floats to be sorted.
  * @param arrID Array of ints corresponding to the sorted floats.
- * @param n Number of elements in the arrays.
+ * @param numOfElements Number of elements in the arrays.
  */
-void bubbleSort(float arr[], int arrID[], int n)
+void bubbleSort(float arr[], int arrID[], int numOfElements)
 {
-    int i, j;
+    int tempIndI, tempIndJ;
     bool swapped;
-    for (i = 0; i < n - 1; i++)
+    for (tempIndI = 0; tempIndI < numOfElements - 1; ++tempIndI)
     {
         swapped = false;
-        for (j = 0; j < n - i - 1; j++)
+        for (tempIndJ = 0; tempIndJ < numOfElements - tempIndI - 1; ++tempIndJ)
         {
-            if (arr[j] < arr[j + 1])
+            if (arr[tempIndJ] < arr[tempIndJ + 1])
             {
-                swapFloat(&arr[j], &arr[j + 1]);
-                swapInt(&arrID[j], &arrID[j + 1]);
+                swapFloat(&arr[tempIndJ], &arr[tempIndJ + 1]);
+                swapInt(&arrID[tempIndJ], &arrID[tempIndJ + 1]);
                 swapped = true;
             }
         }
@@ -70,155 +70,105 @@ void bubbleSort(float arr[], int arrID[], int n)
  * @brief Displays student information by ID with scholarship information.
  *
  * This function displays student information (ID, name, and grade) sorted by ID.
- * If sortedRecords is 1, it uses the sorted array of student indices and grades;
+ * If sortRanks is true, it displays the sorted array of student indices and grades;
  * otherwise, it calculates and displays scholarship information based on predefined thresholds.
  *
  * @param grades Array of student grades.
  * @param studentIndices Array of student indices.
- * @param sortedRecords Flag indicating whether records are sorted.
+ * @param sortRanks Flag indicating whether to show sorted array of students or scholarship information.
  * @param totalNumberOfStudents Total number of students.
  */
-void displayStudentInfoByID(float grades[], int studentIndices[], int sortedRecords, int totalNumberOfStudents)
+void displayStudentInfoByID(float grades[], int studentIndices[], bool sortRanks, int totalNumberOfStudents)
 {
-    int currentStudentIndex[100], fileReadIndex = 0, loopIndex = 0;
-    char studentFirstName[100], studentLastName[100], studentPatronymic[100];
+    int currentStudentIndex[MAX_QUANTITY_OF_STUDENTS], fileReadIndex = 0, loopIndex = 0;
+    char studentFirstName[MAX_STR_LENGTH], studentLastName[MAX_STR_LENGTH], studentPatronymic[MAX_STR_LENGTH];
 
     int *indexes = readStudentIDs();
 
-    if (sortedRecords == 1)
+    FILE *filePointer;
+    filePointer = fopen("studentInformation.txt", "r");
+
+    if (filePointer == NULL)
     {
+        printf("\t\t\t\t\t\t\tCannot open the file.\n\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (sortRanks)
+    {
+        // Display information for sorted records
         for (loopIndex = 0; loopIndex < totalNumberOfStudents; loopIndex++)
         {
             fileReadIndex = 0;
 
-            FILE *filePointer;
-            filePointer = fopen("studentInformation.txt", "r");
-
-            if (filePointer != NULL)
+            while (fileReadIndex < studentIndices[loopIndex])
             {
+                fileReadIndex++;
+                fscanf(filePointer, "%*s %s %s %s", studentFirstName, studentLastName, studentPatronymic);
+            }
+
+            // Print student information
+            printf("\t\t\t\t\t\t\t%.2f\t", grades[loopIndex]);
+            printf("%d ", studentIndices[loopIndex]);
+            printf("%s ", studentFirstName);
+            printf("%s ", studentLastName);
+            printf("%s\n", studentPatronymic);
+
+            rewind(filePointer); // Move file pointer back to the beginning
+        }
+    }
+    else
+    {
+        // Calculate and display scholarship information
+        int maxScholarship100 = scholarship100(totalNumberOfStudents);
+        int maxScholarship50 = scholarship50(totalNumberOfStudents);
+        int maxScholarship25 = scholarship25(totalNumberOfStudents);
+
+        bool isScholarshipGranted = false;
+
+        for (loopIndex = 0; loopIndex < totalNumberOfStudents; loopIndex++)
+        {
+            isScholarshipGranted = false;
+
+            // Determine scholarship level and print information if a scholarship is granted
+            if (loopIndex < maxScholarship100)
+            {
+                printf("\t\t\t\t\t\t\t%s\t", "100%");
+                isScholarshipGranted = true;
+            }
+            else if (loopIndex < maxScholarship50)
+            {
+                printf("\t\t\t\t\t\t\t%s\t", "50%");
+                isScholarshipGranted = true;
+            }
+            else if (loopIndex < maxScholarship25)
+            {
+                printf("\t\t\t\t\t\t\t%s\t", "25%");
+                isScholarshipGranted = true;
+            }
+
+            if (isScholarshipGranted)
+            {
+                fileReadIndex = 0;
+
                 while (fileReadIndex < studentIndices[loopIndex])
                 {
                     fileReadIndex++;
                     fscanf(filePointer, "%*s %s %s %s", studentFirstName, studentLastName, studentPatronymic);
                 }
 
-                printf("\t\t\t\t\t\t\t%d ", studentIndices[loopIndex]);
+                // Print student information
+                printf("%d ", studentIndices[loopIndex]);
                 printf("%s ", studentFirstName);
                 printf("%s ", studentLastName);
-                printf("%s   ", studentPatronymic);
-                printf("%.2f\n", grades[loopIndex]);
+                printf("%s\n", studentPatronymic);
 
-                fclose(filePointer);
-            }
-            else
-            {
-                printf("\t\t\t\t\t\t\tCannot open the file.\n\n");
-                fclose(filePointer);
-                exit(EXIT_FAILURE);
+                rewind(filePointer); // Move file pointer back to the beginning
             }
         }
     }
-    else
-    {
-        int maxScholarship100 = scholarship100(totalNumberOfStudents);
-        int maxScholarship50 = scholarship50(totalNumberOfStudents);
-        int maxScholarship25 = scholarship25(totalNumberOfStudents);
 
-        int True = 0;
-        int scholarship25Count = 0, scholarship50Count = 0, scholarship100Count = 0, tempIndex = 0, tempLoopIndex = 0, temp = 0;
-
-        FILE *filePointer;
-        filePointer = fopen("studentInformation.txt", "r");
-        if (filePointer != NULL)
-        {
-            for (loopIndex = 0; loopIndex < totalNumberOfStudents; loopIndex++)
-            {
-                if (tempLoopIndex < maxScholarship100)
-                {
-                    temp = 0;
-                    True = 0;
-
-                    while (temp < studentIndices[loopIndex])
-                    {
-                        True = 1;
-                        temp++;
-                        fscanf(filePointer, "%*s %s %s %s", studentFirstName, studentLastName, studentPatronymic);
-                    }
-
-                    while (True == 1)
-                    {
-                        printf("\t\t\t\t\t\t\t%d ", studentIndices[loopIndex]);
-                        printf("%s ", studentFirstName);
-                        printf("%s ", studentLastName);
-                        printf("%s   ", studentPatronymic);
-                        printf("\t%s\n", "100%");
-                        True = 0;
-                    }
-
-                    tempLoopIndex++;
-                    rewind(filePointer);
-                }
-                else if (tempLoopIndex < maxScholarship50)
-                {
-                    temp = 0;
-                    True = 0;
-
-                    while (temp < studentIndices[loopIndex])
-                    {
-                        True = 1;
-                        temp++;
-                        fscanf(filePointer, "%*s %s %s %s", studentFirstName, studentLastName, studentPatronymic);
-                    }
-
-                    while (True == 1)
-                    {
-                        printf("\t\t\t\t\t\t\t%d ", studentIndices[loopIndex]);
-                        printf("%s ", studentFirstName);
-                        printf("%s ", studentLastName);
-                        printf("%s   ", studentPatronymic);
-                        printf("\t%s\n", "50%");
-                        True = 0;
-                    }
-
-                    tempLoopIndex++;
-                    rewind(filePointer);
-                }
-                else if (tempIndex < maxScholarship25)
-                {
-                    temp = 0;
-                    True = 0;
-
-                    while (temp < studentIndices[loopIndex])
-                    {
-                        True = 1;
-                        temp++;
-                        fscanf(filePointer, "%*s %s %s %s", studentFirstName, studentLastName, studentPatronymic);
-                    }
-
-                    if (True == 1)
-                    {
-                        printf("\t\t\t\t\t\t\t%d ", studentIndices[loopIndex]);
-                        printf("%s ", studentFirstName);
-                        printf("%s ", studentLastName);
-                        printf("%s   ", studentPatronymic);
-                        printf("\t%s\n", "25%");
-                        True = 0;
-                    }
-
-                    tempIndex++;
-                    rewind(filePointer);
-                }
-            }
-        }
-        else
-        {
-            printf("\t\t\t\t\t\t\tCannot open the file.\n\n");
-            fclose(filePointer);
-            exit(EXIT_FAILURE);
-        }
-
-        fclose(filePointer);
-    }
+    fclose(filePointer); // Close the file
 
     printf("\n");
 }
@@ -233,7 +183,7 @@ void displayStudentInfoByID(float grades[], int studentIndices[], int sortedReco
  * @param sort Scholarship level (0, 25, 50, 100).
  * @param numOfStudents Total number of students.
  */
-void sortRecords(int sort, int numOfStudents)
+void sortRecords(bool sort, int numOfStudents)
 {
     char tempBuf[100];
     float grades[100];
@@ -242,14 +192,17 @@ void sortRecords(int sort, int numOfStudents)
     FILE *fptr;
     fptr = fopen("studentGrades.txt", "r");
 
+    // Check if the file is successfully opened
     if (fptr != NULL)
     {
+        // Read student grades from the file
         while (fscanf(fptr, "%*s %s", tempBuf) == 1)
         {
             grades[tempIndex] = atof(tempBuf);
             tempIndex++;
         }
 
+        // Check if the number of grades matches the total number of students
         if (tempIndex != numOfStudents)
         {
             printf("\n\t\t\t\t\t\t\tNot all students are graded!\n\t\t\t\t\t\t\tPlease, enter all the grades first.\n\n");
@@ -260,6 +213,7 @@ void sortRecords(int sort, int numOfStudents)
         tempIndex = 0;
         rewind(fptr);
 
+        // Read student IDs from the file
         while (fscanf(fptr, "%s %*s", tempBuf) == 1)
         {
             ind[tempIndex] = atoi(tempBuf);
@@ -268,13 +222,16 @@ void sortRecords(int sort, int numOfStudents)
     }
     else
     {
+        // Display an error message if the file cannot be opened
         printf("\t\t\t\t\t\t\tCannot open the file.\n\n");
-        fclose(fptr);
         exit(EXIT_FAILURE);
     }
 
-    fclose(fptr);
+    fclose(fptr); // Close the file
 
+    // Use the bubble sort algorithm to sort grades and corresponding indices in descending order
     bubbleSort(grades, ind, tempIndex);
+
+    // Display student information based on scholarship criteria using displayStudentInfoByID function
     displayStudentInfoByID(grades, ind, sort, numOfStudents);
 }

@@ -1,6 +1,4 @@
-#include "subjects.c"
-
-struct studentInfo newStudent; // Declare a global variable to store information about a new student
+#include "header.h" // Include the custom header file that defines structures and function prototypes
 
 // Function to read student IDs from a file and store them in the 'ind' array
 /**
@@ -13,7 +11,7 @@ struct studentInfo newStudent; // Declare a global variable to store information
  */
 int *readStudentIDs()
 {
-    int tempIndex = 0;            // Temporary index variable
+    int tempIndex = 0;           // Temporary index variable
     char tempBuf[MAX_STR_LENGTH]; // Temporary buffer for reading strings
 
     FILE *fpt;                                  // File pointer
@@ -27,6 +25,12 @@ int *readStudentIDs()
             ind[tempIndex] = atoi(tempBuf);
             tempIndex++;
         }
+    }
+    else
+    {
+        // Display an error message if the file cannot be opened
+        printf("\t\t\t\t\t\t\tCannot open the file.\n\n");
+        exit(EXIT_FAILURE); // Exit the program with a failure status
     }
 
     fclose(fpt); // Close the file
@@ -44,35 +48,44 @@ int *readStudentIDs()
  */
 int validID()
 {
+    int len = 0;
     char charID[MAX_STR_LENGTH];
-    int valid = 0;
+    bool valid = false;
 
-    while (valid == 0)
+    // Continue prompting the user until a valid student ID is entered
+    while (!valid)
     {
-        fgets(charID, sizeof(charID), stdin);
+        fgets(charID, sizeof(charID), stdin); // Read user input as a string
 
-        int len = strlen(charID);
+        len = strlen(charID);
 
+        // Remove trailing whitespaces
         while (len > 0 && isspace(charID[len - 1]))
         {
             len--;
-            if (len > 0)
+        }
+
+        // Check if the entered string is not empty
+        if (len > 0)
+        {
+            valid = true;
+            // Validate each character in the entered string
+            for (int i = 0; i < len; ++i)
             {
-                valid = 1;
-                for (int i = 0; i < len; ++i)
+                // Check if the character is a digit
+                if (!isdigit(charID[i]))
                 {
-                    if (!isdigit(charID[i]))
-                    {
-                        valid = 0;
-                        printf("\t\t\t\t\t\t\tID must be a positive number or zero. Enter the student's ID again: ");
-                        break;
-                    }
+                    valid = false;
+                    // Display an error message and prompt the user for input again
+                    printf("\t\t\t\t\t\t\tID must be a positive number or zero and cannot contain white spaces.\n");
+                    printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
+                    break;
                 }
             }
         }
     }
 
-    int ID = atoi(charID);
+    int ID = atoi(charID); // Convert the validated string to an integer
     return ID;
 }
 
@@ -85,25 +98,27 @@ int validID()
  *
  * @param studentID The student ID to be checked.
  * @param ind Array of existing student IDs.
- * @return Unique student ID.
  */
-int checkID(int studentID, int * ind)
+int checkID(int studentID, int *ind)
 {
     int tempIndex = 0;
 
+    // Iterate through the existing array of student IDs
     while (*(ind + tempIndex))
     {
+        // Check if the input ID matches any existing ID
         if (*(ind + tempIndex) == studentID)
         {
+            // Display an error message and prompt the user for input again
             printf("\t\t\t\t\t\t\tRepeated ID! Enter another ID.\n");
             printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
-            studentID = validID();
-            studentID = checkID(studentID, ind);
+            studentID = validID(); // Get a new student ID from the user
+            tempIndex = 0;         // Reset the index to recheck the entire array
         }
         else
-            tempIndex++;
+            tempIndex++; // Move to the next element in the array
     }
-    return studentID;
+    return studentID; // Return the unique and validated student ID
 }
 
 // Function to validate and ensure a name contains only letters
@@ -119,19 +134,25 @@ void validName(char name[])
 {
     int tempIndex = 0;
 
+    char format[MAX_STR_LENGTH];
+    sprintf(format, "%%%d[^\n]s", MAX_STR_LENGTH);
+
+    // Continue prompting the user until a valid name is entered
     while (name[tempIndex])
     {
+        // Check if the current character is not a letter
         if (!(isalpha(name[tempIndex])))
         {
-            printf("\t\t\t\t\t\t\tName must be composed of letters and cannot contain white spaces.\n\t\t\t\t\t\t\tEnter the student's information again: ");
+            // Display an error message and prompt the user for input again
+            printf("\t\t\t\t\t\t\tName must be composed of letters and cannot contain white spaces.\n");
+            printf("\t\t\t\t\t\t\tEnter the student's information again: ");
+            getchar(); // Consume the newline character left in the input buffer
 
-            getchar();
-
-            scanf("%99[^\n]s", name); // TODO: need to use MAX_NAME_LENGTH
-            tempIndex = 0;
+            scanf(format, name); // Get a new name from the user
+            tempIndex = 0;       // Reset the index to recheck the entire array
         }
         else
-            tempIndex++;
+            tempIndex++; // Move to the next character in the array
     }
 }
 
@@ -147,42 +168,46 @@ void validName(char name[])
  */
 int addStudent(int totalNumberOfStudents)
 {
+    char format[MAX_STR_LENGTH];
+    sprintf(format, "%%%d[^\n]s", MAX_STR_LENGTH);
+
     totalNumberOfStudents++;
 
+    // Check if the maximum limit of students has been reached
     if (totalNumberOfStudents > MAX_QUANTITY_OF_STUDENTS)
     {
+        // Display an error message and return the original total number of students
         printf("\n\t\t\t\t\t\t\tToo many students. New student cannot be added!\n\n");
         return totalNumberOfStudents--;
     }
 
     printf("\t\t\t\t\t\t\tEnter the student's ID: ");
 
-    newStudent.ID = validID();
-    newStudent.ID = checkID(newStudent.ID, readStudentIDs());
+    newStudent.ID = validID(); // Get a valid student ID from the user
+    newStudent.ID = checkID(newStudent.ID, readStudentIDs()); // Ensure the ID is unique
 
     printf("\t\t\t\t\t\t\tEnter the student's first name: ");
-    scanf("%99[^\n]s", newStudent.firstName); // TODO: need to use MAX_NAME_LENGTH
-
-    validName(newStudent.firstName);
+    scanf(format, newStudent.firstName); 
+    validName(newStudent.firstName); // Validate and ensure the entered name contains only letters
 
     getchar();
 
     printf("\t\t\t\t\t\t\tEnter the student's last name: ");
-    scanf("%99[^\n]s", newStudent.lastName); // TODO: need to use MAX_NAME_LENGTH
-    validName(newStudent.lastName);
+    scanf(format, newStudent.lastName); 
+    validName(newStudent.lastName); // Validate and ensure the entered name contains only letters
 
     getchar();
 
     printf("\t\t\t\t\t\t\tEnter the student's patronymic: ");
-    scanf("%99[^\n]s", newStudent.patronymic); // TODO: need to use MAX_NAME_LENGTH
-
-    validName(newStudent.patronymic);
+    scanf(format, newStudent.patronymic); 
+    validName(newStudent.patronymic); // Validate and ensure the entered name contains only letters
 
     FILE *fptr;
     fptr = fopen("studentInformation.txt", "a");
 
     if (fptr != NULL)
     {
+        // Write the student information to the file
         fprintf(fptr, "%d", newStudent.ID);
         fputs(" ", fptr);
         fputs(newStudent.firstName, fptr);
@@ -192,16 +217,16 @@ int addStudent(int totalNumberOfStudents)
         fputs(newStudent.patronymic, fptr);
         fputs("\n", fptr);
 
-        printf("\n\t\t\t\t\t\t\tThe information was recorded successfully.\n\n");
-
-        fclose(fptr);
+        printf("\n\t\t\t\t\t\t\tThe information was recorded successfully.\n\n"); 
     }
     else
     {
+        // Display an error message if the file cannot be opened and exit the program
         printf("\t\t\t\t\t\t\tCannot open the file.\n\n");
-        fclose(fptr);
         exit(EXIT_FAILURE);
     }
+    
+    fclose(fptr);
 
-    return totalNumberOfStudents;
+    return totalNumberOfStudents; // Return the updated total number of students
 }

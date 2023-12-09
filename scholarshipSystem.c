@@ -1,4 +1,4 @@
-#include "deleteStudentInfo.c"
+#include "header.h" // Include the custom header file that defines structures and function prototypes
 
 // Function to display the menu options
 /**
@@ -32,16 +32,22 @@ void menu()
 int main()
 {
     struct studentInfo newStudent;
-    int sortedRecords = 0, numberOfStudents = 0;
+    int numberOfStudents = 0;
     char choice = 1; 
+    bool sortRanks;
 
     char buf[MAX_QUANTITY_OF_STUDENTS];
+
+    // Initialize subjects
+    addSubjects(countSubjects());
 
     FILE* fpt;
     fpt = fopen("studentInformation.txt", "r");
 
+    // Check if the file is successfully opened
     if(fpt != NULL)
     {
+        // Count the number of students in the file
         while(fscanf(fpt, "%s %*s %*s %*s", buf) == 1)
         {
             numberOfStudents++;
@@ -49,31 +55,39 @@ int main()
     }
     else 
     {
+        // Print an error message if the file cannot be opened
         printf("\t\t\t\t\t\t\tCannot open the student info file.\n\n"); 
-        fclose(fpt);
         exit(EXIT_FAILURE);
     }
 
     fclose(fpt);
 
+    // Main loop for user interaction
     while (choice != 0)
     {
+        // Display the main menu
         menu();
+        
+        // Get user input for menu choice
         scanf("%d", &choice);
         printf("\n"); 
 
+        // Validate user input
         while(choice > 5 || choice < 0)
         {
+            // Prompt the user for a valid choice if the input is incorrect
             printf("\t\t\t\t\t\t\tWrong operator! Enter once more.\n\n");
             menu();
             scanf("%d", &choice);
             printf("\n"); 
         }
         
+        // Switch based on user choice
         switch(choice)
         {
             case 1:
             {
+                // Add a new student and update the number of students
                 numberOfStudents = addStudent(numberOfStudents);
                 break;
             }
@@ -81,56 +95,69 @@ int main()
             {
                 if(numberOfStudents == 0)
                 {
+                    // Display an error message if there are no students
                     printf("\t\t\t\t\t\t\tNo student information available.\n\t\t\t\t\t\t\tPlease add student information first.\n\n");
                     break;
                 }
-                printf("\t\t\t\t\t\t\tEnter the student's ID: ");
-                newStudent.ID = validID();
-                findExistingID(newStudent.ID, numberOfStudents);
+                
+                // Find an existing ID and add student grade
+                findExistingID(numberOfStudents);
                 break;
             }
             case 3:
             {
                 if(numberOfStudents == 0)
                 {
+                    // Display an error message if there are no students
                     printf("\t\t\t\t\t\t\tNo student information available.\n\t\t\t\t\t\t\tPlease add student information first.\n\n");
                     break;
                 }
-                sortedRecords = 1;
+                
+                // Display students' ranks
+                sortRanks = true;
                 printf("\t\t\t\t\t\t\tThe ranks of the students:\n");
-                sortRecords(sortedRecords, numberOfStudents);
+                sortRecords(sortRanks, numberOfStudents);
                 break;
             }
             case 4:
             {
-                if(numberOfStudents == 0)
+                // Option to display student records with scholarship information
+                if (numberOfStudents == 0)
                 {
+                    // Check if there is no student information available
                     printf("\t\t\t\t\t\t\tNo student information available.\n\t\t\t\t\t\t\tPlease add student information first.\n\n");
                     break;
                 }
-                sortedRecords = 0;
+                sortRanks = false;
                 printf("\t\t\t\t\t\t\tThe scholarships are:\n");
-                sortRecords(sortedRecords, numberOfStudents);
+                // Sort and display student records with scholarship information
+                sortRecords(sortRanks, numberOfStudents);
                 break;
-
             }
+
             case 5:
             {
-                if(numberOfStudents == 0)
+                // Option to delete a student's information
+                if (numberOfStudents == 0)
                 {
+                    // Check if there is no student information available
                     printf("\t\t\t\t\t\t\tNo student information available.\n\t\t\t\t\t\t\tPlease add student information first.\n\n");
                     break;
                 }
-                printf("\t\t\t\t\t\t\tEneter the students ID: ");
+                printf("\t\t\t\t\t\t\tEnter the student's ID: ");
                 newStudent.ID = validID();
+                // Delete the student's information and update the number of students
                 numberOfStudents = deleteStudent(newStudent.ID, numberOfStudents);
                 break;
             }
-        }   
+        }
+
+        // Exit the loop and terminate the program
+        printf("\t\t\t\t\t\t\tYou have successfully quit!\n\n");
+
+        // Free the allocated memory for the 'sp' array
+        free(sp);
+
+        // Return 0 to indicate successful execution
+        return 0;
     }
-
-    printf("\t\t\t\t\t\t\tYou have successfully quited!\n\n");
-    
-    return 0;
-
-}

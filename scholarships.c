@@ -1,4 +1,4 @@
-#include "addGrade.c"
+#include "header.h" // Include the custom header file that defines structures and function prototypes
 
 // Function to determine the 25% scholarship level based on the number of students
 /**
@@ -14,13 +14,14 @@ int scholarship25(int numOfStudents)
 {
     if (numOfStudents < 18 || (numOfStudents > 19 && numOfStudents < 23))
     {
-        return 0;
+        return 0; // Return the determined scholarship level
     }
     else if (numOfStudents < 20 || numOfStudents == 23)
     {
-        return 1;
+        return 1; // Return the determined scholarship level
     }
 
+    // Define scholarship level thresholds and determine the appropriate level
     const int thresholds[] = {18, 23, 29, 40, 52, 63, 74, 86, 97, 108, 120, 131, 143, 154, 165, 177};
     const int numThresholds = sizeof(thresholds) / sizeof(thresholds[0]);
 
@@ -28,7 +29,7 @@ int scholarship25(int numOfStudents)
     {
         if (numOfStudents < thresholds[tempIndex])
         {
-            return tempIndex;
+            return tempIndex; // Return the determined scholarship level
         }
     }
 
@@ -47,6 +48,7 @@ int scholarship25(int numOfStudents)
  */
 int scholarship50(int numOfStudents)
 {
+    // Define scholarship level thresholds and determine the appropriate level
     const int thresholds[] = {20, 34, 57, 79, 102, 124, 147, 169};
     const int numThresholds = sizeof(thresholds) / sizeof(thresholds[0]);
 
@@ -54,7 +56,7 @@ int scholarship50(int numOfStudents)
     {
         if (numOfStudents < thresholds[tempIndex])
         {
-            return tempIndex;
+            return tempIndex; // Return the determined scholarship level
         }
     }
 
@@ -73,6 +75,7 @@ int scholarship50(int numOfStudents)
  */
 int scholarship100(int numOfStudents)
 {
+    // Define scholarship level thresholds and determine the appropriate level
     const int thresholds[] = {5, 68, 113, 158};
     const int numThresholds = sizeof(thresholds) / sizeof(thresholds[0]);
 
@@ -80,7 +83,7 @@ int scholarship100(int numOfStudents)
     {
         if (numOfStudents < thresholds[tempIndex])
         {
-            return tempIndex;
+            return tempIndex; // Return the determined scholarship level
         }
     }
 
