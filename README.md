@@ -53,7 +53,7 @@ B. Basic understanding of the C programming language
 
 3. **Run the executable:**
 
-   ./myprogram
+   ./my_program
 
 4. **Follow the On-Screen Instructions:**
 
