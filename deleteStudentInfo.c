@@ -55,7 +55,7 @@ int deleteStudent(int studentID, int numOfStudents)
         {
             printf("\t\t\t\t\t\t\tNon-existent ID! Enter a valid ID.\n");
             printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
-            studentID = validID();
+            studentID = isDigit();
         }
     }
 

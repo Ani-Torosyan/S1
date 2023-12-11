@@ -12,7 +12,7 @@
 #include <ctype.h>
 
 // Maximum length for strings and the maximum number of students
-#define MAX_STR_LENGTH 99
+#define MAX_STR_LENGTH 256
 #define MAX_QUANTITY_OF_STUDENTS 180
 
 // Array to store student indices
@@ -45,7 +45,8 @@ struct studentInfo newStudent;
 int countSubjects(); // Counts the number of subjects
 void addSubjects(int totalNumOfSubjects); // Adds subjects to the global array of subjectInfo
 int *readStudentIDs(); // Reads and returns an array of student IDs
-int validID(); // Validates the entered student ID
+int isDigit(); // Checks if the input is int
+float isFloat(); // Checks if the input is float
 int checkID(int studentID, int *ind); // Checks if a student ID already exists
 void validName(char name[]); // Validates the entered name
 int addStudent(int totalNumberOfStudents); // Adds a new student to the records

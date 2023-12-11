@@ -53,7 +53,7 @@ void addSubjects(int totalNumOfSubjects)
     }
 
     int credits[MAX_QUANTITY_OF_STUDENTS], tempIndex = 0;                   // Arrays to store subject credits and a temporary index variable
-    char tempBuf[MAX_STR_LENGTH], tempArr[totalNumOfSubjects][MAX_STR_LENGTH]; // Temporary buffers
+    char tempBuf[MAX_STR_LENGTH], tempArr[MAX_QUANTITY_OF_STUDENTS][MAX_STR_LENGTH]; // Temporary buffers
 
     FILE *fpt;
     fpt = fopen("subjectInfo.txt", "r"); // Open the file in read mode

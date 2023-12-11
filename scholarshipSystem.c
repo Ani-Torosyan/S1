@@ -67,18 +67,15 @@ int main()
     {
         // Display the main menu
         menu();
-        
-        // Get user input for menu choice
-        scanf("%d", &choice);
-        printf("\n"); 
+        // Get user input for menu choice and check if it is a number
+        choice = isDigit();
 
         // Validate user input
         while(choice > 5 || choice < 0)
         {
             // Prompt the user for a valid choice if the input is incorrect
-            printf("\t\t\t\t\t\t\tWrong operator! Enter once more.\n\n");
-            menu();
-            scanf("%d", &choice);
+            printf("\t\t\t\t\t\t\tWrong operator! Enter once more: ");
+            choice = isDigit();
             printf("\n"); 
         }
         
@@ -145,20 +142,20 @@ int main()
                     break;
                 }
                 printf("\t\t\t\t\t\t\tEnter the student's ID: ");
-                newStudent.ID = validID();
+                newStudent.ID = isDigit();
                 // Delete the student's information and update the number of students
                 numberOfStudents = deleteStudent(newStudent.ID, numberOfStudents);
                 break;
             }
-        }
-
-        // Exit the loop and terminate the program
-        printf("\t\t\t\t\t\t\tYou have successfully quit!\n\n");
-
-        // Free the allocated memory for the 'sp' array
-        free(sp);
-
-        // Return 0 to indicate successful execution
-        return 0;
+        } 
     }
+
+    // Exit the loop and terminate the program
+    printf("\t\t\t\t\t\t\tYou have successfully quited!\n\n");
+
+    // Free the allocated memory for the 'sp' array
+    free(sp);
+
+    // Return 0 to indicate successful execution
+    return 0;
 }

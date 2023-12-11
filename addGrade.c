@@ -1,5 +1,45 @@
 #include "header.h" // Include the custom header file that defines structures and function prototypes
 
+/**
+ * Function to get a floating-point number from the user input.
+ * This function uses fgets to get input and converts it to a float.
+ *
+ * @return float - The floating-point number entered by the user.
+ */
+float isFloat()
+{
+    char input[MAX_STR_LENGTH];  // Buffer to store user input
+    int isNumber = 0;  // Flag to check if the input is a valid number
+
+    // Keep prompting the user until a valid number is entered
+    do 
+    {
+        // Get user input using fgets
+        fgets(input, sizeof(input), stdin);
+
+        // Convert input to a number using strtod
+        char *endptr;
+        double number = strtod(input, &endptr);
+
+        // Check if the conversion was successful and if the entire string was consumed
+        if (*endptr == '\n' || *endptr == '\0')
+        {
+            isNumber = 1;  // Set the flag to indicate a valid number
+        } 
+        else 
+        {
+            // Display an error message for invalid input
+            printf("\t\t\t\t\t\t\tInvalid input. Please enter a valid number.\n");
+            printf("\t\t\t\t\t\t\tEnter the student's grade again: ");
+        }
+        
+    } while (!isNumber);  // Continue the loop until a valid number is entered
+    
+    // Convert the input string to a float and return
+    float num = atof(input);
+    return num;
+}
+
 // Function to calculate and record grades for a student
 /**
  * @brief Calculates and records grades for a student.
@@ -22,8 +62,9 @@ void calculateGrade(int studentID)
         for (tempIndex = 0; tempIndex < numOfSubjects; tempIndex++)
         {
             // Prompt the user to enter the student's grade for each subject
-            printf("\t\t\t\t\t\t\tEnter the student's grade for %s: ", sp[tempIndex].subjectName);
-            scanf("%f", &sp[tempIndex].grade);
+            printf("\t\t\t\t\t\t\tEnter the student's grade for %s(from 0 to 20): ", sp[tempIndex].subjectName);
+        
+            sp[tempIndex].grade = isFloat();
 
             // Validate the entered grade
             while (sp[tempIndex].grade < 0 || sp[tempIndex].grade > 20)
@@ -31,7 +72,7 @@ void calculateGrade(int studentID)
                 // Display an error message and prompt the user for input again
                 printf("\t\t\t\t\t\t\tError in grade!\n");
                 printf("\t\t\t\t\t\t\tPlease, enter the student's grade for %s again: ", sp[tempIndex].subjectName);
-                scanf("%f", &sp[tempIndex].grade);
+                sp[tempIndex].grade = isFloat();
             }
 
             // Calculate the total grade for the student
@@ -93,7 +134,7 @@ void findExistingID(int numOfStudents)
         }
 
         printf("\t\t\t\t\t\t\tEnter the student's ID: ");
-        studentID = validID();
+        studentID = isDigit();
 
         while (True)
         {
@@ -108,7 +149,7 @@ void findExistingID(int numOfStudents)
                     // Display an error message and prompt the user for input again
                     printf("\t\t\t\t\t\t\tStudent is already graded.\n");
                     printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
-                    studentID = validID();
+                    studentID = isDigit();
                     True = true;
                     break;
                 }
@@ -154,7 +195,7 @@ void findExistingID(int numOfStudents)
             {
                 printf("\t\t\t\t\t\t\tNon-existent ID! Enter a valid ID.\n");
                 printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
-                studentID = validID();
+                studentID = isDigit();
             }
         }
     }

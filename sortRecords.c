@@ -136,12 +136,12 @@ void displayStudentInfoByID(float grades[], int studentIndices[], bool sortRanks
                 printf("\t\t\t\t\t\t\t%s\t", "100%");
                 isScholarshipGranted = true;
             }
-            else if (loopIndex < maxScholarship50)
+            else if (loopIndex < (maxScholarship50 + maxScholarship100))
             {
                 printf("\t\t\t\t\t\t\t%s\t", "50%");
                 isScholarshipGranted = true;
             }
-            else if (loopIndex < maxScholarship25)
+            else if (loopIndex < (maxScholarship25 + maxScholarship50 + maxScholarship100))
             {
                 printf("\t\t\t\t\t\t\t%s\t", "25%");
                 isScholarshipGranted = true;

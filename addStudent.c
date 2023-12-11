@@ -46,13 +46,13 @@ int *readStudentIDs()
  *
  * @return Valid student ID.
  */
-int validID()
+int isDigit()
 {
     int len = 0;
     char charID[MAX_STR_LENGTH];
     bool valid = false;
 
-    // Continue prompting the user until a valid student ID is entered
+    // Continue prompting the user until a valid input is entered
     while (!valid)
     {
         fgets(charID, sizeof(charID), stdin); // Read user input as a string
@@ -77,8 +77,8 @@ int validID()
                 {
                     valid = false;
                     // Display an error message and prompt the user for input again
-                    printf("\t\t\t\t\t\t\tID must be a positive number or zero and cannot contain white spaces.\n");
-                    printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
+                    printf("\t\t\t\t\t\t\tInput must be a number and cannot contain white spaces.\n");
+                    printf("\t\t\t\t\t\t\tEnter again: ");
                     break;
                 }
             }
@@ -112,7 +112,7 @@ int checkID(int studentID, int *ind)
             // Display an error message and prompt the user for input again
             printf("\t\t\t\t\t\t\tRepeated ID! Enter another ID.\n");
             printf("\t\t\t\t\t\t\tEnter the student's ID again: ");
-            studentID = validID(); // Get a new student ID from the user
+            studentID = isDigit(); // Get a new student ID from the user
             tempIndex = 0;         // Reset the index to recheck the entire array
         }
         else
@@ -183,7 +183,7 @@ int addStudent(int totalNumberOfStudents)
 
     printf("\t\t\t\t\t\t\tEnter the student's ID: ");
 
-    newStudent.ID = validID(); // Get a valid student ID from the user
+    newStudent.ID = isDigit(); // Get a valid student ID from the user
     newStudent.ID = checkID(newStudent.ID, readStudentIDs()); // Ensure the ID is unique
 
     printf("\t\t\t\t\t\t\tEnter the student's first name: ");
